@@ -1,22 +1,22 @@
 fileFormatVersion: 2
-guid: ca3c36af9e5a20a47a8c8c7d80254cc8
+guid: da3db9fa5840f7b4da4b802100de1107
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2577086591122519131
-    second: CubeJump_0
+      213: -8606098125529521469
+    second: CubeJump1_0
   - first:
-      213: 6442095843826125752
-    second: CubeJump_1
+      213: 2721150539589605803
+    second: CubeJump1_1
   - first:
-      213: -3633805155907498616
-    second: CubeJump_2
+      213: 8804636690130677071
+    second: CubeJump1_2
   - first:
-      213: 5579303711170990572
-    second: CubeJump_3
+      213: 3666358906226818715
+    second: CubeJump1_3
   - first:
-      213: -7812995831034537767
-    second: CubeJump_4
+      213: 3294509357312722618
+    second: CubeJump1_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,7 +125,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CubeJump_0
+      name: CubeJump1_0
       rect:
         serializedVersion: 2
         x: 59
@@ -140,14 +140,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ab48bc36695c3cd0800000000000000
-      internalID: -2577086591122519131
+      spriteID: 3c268a51a5ff09880800000000000000
+      internalID: -8606098125529521469
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeJump_1
+      name: CubeJump1_1
       rect:
         serializedVersion: 2
         x: 237
@@ -162,14 +162,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8bbc64cc90ce66950800000000000000
-      internalID: 6442095843826125752
+      spriteID: ba9d99c9ff773c520800000000000000
+      internalID: 2721150539589605803
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeJump_2
+      name: CubeJump1_2
       rect:
         serializedVersion: 2
         x: 416
@@ -184,14 +184,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 88d8623a671229dc0800000000000000
-      internalID: -3633805155907498616
+      spriteID: f4d2c93bb6a503a70800000000000000
+      internalID: 8804636690130677071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeJump_3
+      name: CubeJump1_3
       rect:
         serializedVersion: 2
         x: 591
@@ -206,14 +206,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ce19d563a2bad6d40800000000000000
-      internalID: 5579303711170990572
+      spriteID: b9e3db0000681e230800000000000000
+      internalID: 3666358906226818715
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeJump_4
+      name: CubeJump1_4
       rect:
         serializedVersion: 2
         x: 768
@@ -228,8 +228,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9d8149bcfa9a29390800000000000000
-      internalID: -7812995831034537767
+      spriteID: ab643df2ec278bd20800000000000000
+      internalID: 3294509357312722618
       vertices: []
       indices: 
       edges: []
@@ -248,11 +248,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CubeJump_0: -2577086591122519131
-      CubeJump_1: 6442095843826125752
-      CubeJump_2: -3633805155907498616
-      CubeJump_3: 5579303711170990572
-      CubeJump_4: -7812995831034537767
+      CubeJump1_0: -8606098125529521469
+      CubeJump1_1: 2721150539589605803
+      CubeJump1_2: 8804636690130677071
+      CubeJump1_3: 3666358906226818715
+      CubeJump1_4: 3294509357312722618
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

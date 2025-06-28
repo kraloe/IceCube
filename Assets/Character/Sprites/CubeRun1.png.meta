@@ -1,22 +1,16 @@
 fileFormatVersion: 2
-guid: 812a943bbde32d0438f801ae870b0939
+guid: 4c56c6f6ac6306e4f81f7e78d2375a1e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3900422873075506156
-    second: CubeLand2_0
+      213: 368959698642728106
+    second: CubeRun1_0
   - first:
-      213: 1524656705448523396
-    second: CubeLand2_1
+      213: 4748480078607170095
+    second: CubeRun1_1
   - first:
-      213: -4481176224069885072
-    second: CubeLand2_2
-  - first:
-      213: -8738123004712088330
-    second: CubeLand2_3
-  - first:
-      213: -6022990721756179774
-    second: CubeLand2_4
+      213: 1094435153094171127
+    second: CubeRun1_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CubeLand2_0
+      name: CubeRun1_0
       rect:
         serializedVersion: 2
-        x: 59
-        y: 57
-        width: 116
-        height: 119
+        x: 50
+        y: 56
+        width: 129
+        height: 114
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,20 +134,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 414a680ff0aeed9c0800000000000000
-      internalID: -3900422873075506156
+      spriteID: aa4f80e14eece1500800000000000000
+      internalID: 368959698642728106
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeLand2_1
+      name: CubeRun1_1
       rect:
         serializedVersion: 2
-        x: 234
+        x: 235
+        y: 51
+        width: 117
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2a3664197df5e140800000000000000
+      internalID: 4748480078607170095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CubeRun1_2
+      rect:
+        serializedVersion: 2
+        x: 414
         y: 53
-        width: 120
-        height: 123
+        width: 111
+        height: 116
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,74 +178,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4863da4123ba82510800000000000000
-      internalID: 1524656705448523396
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CubeLand2_2
-      rect:
-        serializedVersion: 2
-        x: 412
-        y: 53
-        width: 123
-        height: 122
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 073636c67f9afc1c0800000000000000
-      internalID: -4481176224069885072
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CubeLand2_3
-      rect:
-        serializedVersion: 2
-        x: 589
-        y: 52
-        width: 115
-        height: 126
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6fc877c7c63fbb680800000000000000
-      internalID: -8738123004712088330
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CubeLand2_4
-      rect:
-        serializedVersion: 2
-        x: 768
-        y: 52
-        width: 114
-        height: 123
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2c2df3889d90a6ca0800000000000000
-      internalID: -6022990721756179774
+      spriteID: 7f9d0e129f6303f00800000000000000
+      internalID: 1094435153094171127
       vertices: []
       indices: 
       edges: []
@@ -248,11 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CubeLand2_0: -3900422873075506156
-      CubeLand2_1: 1524656705448523396
-      CubeLand2_2: -4481176224069885072
-      CubeLand2_3: -8738123004712088330
-      CubeLand2_4: -6022990721756179774
+      CubeRun1_0: 368959698642728106
+      CubeRun1_1: 4748480078607170095
+      CubeRun1_2: 1094435153094171127
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

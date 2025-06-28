@@ -3,14 +3,14 @@ guid: a09678763e05d77459557bade80d88ad
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6501883453948430565
-    second: CubeDam_0
+      213: -282035329035483056
+    second: CubeDam1_0
   - first:
-      213: 5091297884767382326
-    second: CubeDam_1
+      213: 899682604980467924
+    second: CubeDam1_1
   - first:
-      213: 1882275847661792323
-    second: CubeDam_2
+      213: -3573403274961866301
+    second: CubeDam1_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -119,7 +119,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CubeDam_0
+      name: CubeDam1_0
       rect:
         serializedVersion: 2
         x: 57
@@ -134,14 +134,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5e8069b8d845b3a50800000000000000
-      internalID: 6501883453948430565
+      spriteID: 058cabecc52061cf0800000000000000
+      internalID: -282035329035483056
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeDam_1
+      name: CubeDam1_1
       rect:
         serializedVersion: 2
         x: 232
@@ -156,14 +156,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 63be14b837ce7a640800000000000000
-      internalID: 5091297884767382326
+      spriteID: 4d8757000905c7c00800000000000000
+      internalID: 899682604980467924
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CubeDam_2
+      name: CubeDam1_2
       rect:
         serializedVersion: 2
         x: 409
@@ -178,8 +178,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 34cad2529ef2f1a10800000000000000
-      internalID: 1882275847661792323
+      spriteID: 3c13ea477a8b86ec0800000000000000
+      internalID: -3573403274961866301
       vertices: []
       indices: 
       edges: []
@@ -198,9 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CubeDam_0: 6501883453948430565
-      CubeDam_1: 5091297884767382326
-      CubeDam_2: 1882275847661792323
+      CubeDam1_0: -282035329035483056
+      CubeDam1_1: 899682604980467924
+      CubeDam1_2: -3573403274961866301
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

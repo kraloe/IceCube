@@ -1,24 +1,21 @@
 fileFormatVersion: 2
-guid: e0d1e122a29a24ec19a2b23782952411
+guid: 2624e5a03d5021343967deec28a7e79b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: Unity_MC_render_land_0
+      213: -8859562688143863554
+    second: CubeSide1_0
   - first:
-      213: 21300002
-    second: Unity_MC_render_land_1
+      213: 3306357134272180993
+    second: CubeSide1_1
   - first:
-      213: 21300004
-    second: Unity_MC_render_land_2
+      213: 8404031916369473967
+    second: CubeSide1_2
   - first:
-      213: 21300006
-    second: Unity_MC_render_land_3
-  - first:
-      213: 21300008
-    second: Unity_MC_render_land_4
+      213: 1714379338801026134
+    second: CubeSide1_3
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -35,11 +32,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMasterTextureLimit: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -59,7 +57,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -77,9 +75,11 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 1
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -89,9 +89,10 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
-  - serializedVersion: 3
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -101,9 +102,10 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
-  - serializedVersion: 3
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -113,135 +115,120 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Unity_MC_render_land_0
+      name: CubeSide1_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 126
-        width: 128
-        height: 126
+        x: 60
+        y: 51
+        width: 114
+        height: 116
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 451b7046c44724a11b68941b40f15f0f
-      internalID: 21300000
+      spriteID: ef051e3dca28c0580800000000000000
+      internalID: -8859562688143863554
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Unity_MC_render_land_1
+      name: CubeSide1_1
       rect:
         serializedVersion: 2
-        x: 128
-        y: 126
-        width: 128
-        height: 126
+        x: 235
+        y: 51
+        width: 112
+        height: 111
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 3969cfb0e2b674a89ad13e00ad1ea050
-      internalID: 21300002
+      spriteID: 1033fd8bb4a82ed20800000000000000
+      internalID: 3306357134272180993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Unity_MC_render_land_2
+      name: CubeSide1_2
       rect:
         serializedVersion: 2
-        x: 256
-        y: 126
-        width: 128
-        height: 126
+        x: 411
+        y: 51
+        width: 114
+        height: 103
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 011dad868034147db88b92ad496b1e38
-      internalID: 21300004
+      spriteID: fa17f30608e11a470800000000000000
+      internalID: 8404031916369473967
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Unity_MC_render_land_3
+      name: CubeSide1_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 126
+        x: 590
+        y: 51
+        width: 112
+        height: 103
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 01bb7847703d845109c81b07fb4ab1ff
-      internalID: 21300006
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Unity_MC_render_land_4
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 128
-        height: 126
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 66aa0e57c9b6340b1b1d7d54f645618c
-      internalID: 21300008
+      spriteID: 654118bece2bac710800000000000000
+      internalID: 1714379338801026134
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
-    spriteID: c52ad6d09d98d4d9a881d6b59388b3d2
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
-      Unity_MC_render_land_0: 21300000
-      Unity_MC_render_land_4: 21300008
-      Unity_MC_render_land_1: 21300002
-      Unity_MC_render_land_3: 21300006
-      Unity_MC_render_land_2: 21300004
-  spritePackingTag: 
+      CubeSide1_0: -8859562688143863554
+      CubeSide1_1: 3306357134272180993
+      CubeSide1_2: 8404031916369473967
+      CubeSide1_3: 1714379338801026134
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

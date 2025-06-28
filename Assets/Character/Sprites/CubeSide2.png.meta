@@ -11,9 +11,6 @@ TextureImporter:
   - first:
       213: -4526488940273862835
     second: CubeSide2_2
-  - first:
-      213: 1713127493014667752
-    second: CubeSide2_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,10 +122,10 @@ TextureImporter:
       name: CubeSide2_0
       rect:
         serializedVersion: 2
-        x: 49
-        y: 51
-        width: 125
-        height: 119
+        x: 54
+        y: 52
+        width: 121
+        height: 120
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -147,10 +144,10 @@ TextureImporter:
       name: CubeSide2_1
       rect:
         serializedVersion: 2
-        x: 227
+        x: 231
         y: 51
-        width: 120
-        height: 118
+        width: 125
+        height: 119
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,10 +166,10 @@ TextureImporter:
       name: CubeSide2_2
       rect:
         serializedVersion: 2
-        x: 406
-        y: 51
-        width: 119
-        height: 111
+        x: 409
+        y: 52
+        width: 126
+        height: 122
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -183,28 +180,6 @@ TextureImporter:
       bones: []
       spriteID: d47fd3b8a4eae21c0800000000000000
       internalID: -4526488940273862835
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CubeSide2_3
-      rect:
-        serializedVersion: 2
-        x: 584
-        y: 51
-        width: 118
-        height: 110
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8e1481cd06046c710800000000000000
-      internalID: 1713127493014667752
       vertices: []
       indices: 
       edges: []
@@ -226,7 +201,6 @@ TextureImporter:
       CubeSide2_0: 5115496728055997602
       CubeSide2_1: -7523297452539320559
       CubeSide2_2: -4526488940273862835
-      CubeSide2_3: 1713127493014667752
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
