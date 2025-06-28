@@ -9,31 +9,38 @@ using UnityEngine.InputSystem;
 
 namespace Platformer.Mechanics
 {
-    /// <summary>
-    /// This is the main class used to implement control of the player.
-    /// It is a superset of the AnimationController class, but is inlined to allow for any kind of customisation.
-    /// </summary>
     public class PlayerController : KinematicObject
     {
         public AudioClip jumpAudio;
         public AudioClip respawnAudio;
         public AudioClip ouchAudio;
 
-        /// <summary>
-        /// Max horizontal speed of the player.
-        /// </summary>
-        public float maxSpeed = 7;
-        /// <summary>
-        /// Initial jump velocity at the start of a jump.
-        /// </summary>
-        public float jumpTakeOffSpeed = 7;
+        public float maxSpeed = 7f;
+        public float walkSpeed = 3f;
+        public float slideSpeed = 8f;
+        public float rollSpeed = 10f;
+        public float jumpTakeOffSpeed = 7f;
+        public float wallSlideSpeed = -2f;
+        public float doubleTapMaxDelay = 0.3f;
+
+        public enum SnowState { Ice = 0, Snow = 1, Snowball = 2 }
+        public SnowState snowState = SnowState.Ice;
+
+        public enum RollState { None, Rolling }
+        private RollState rollState = RollState.None;
 
         public JumpState jumpState = JumpState.Grounded;
         private bool stopJump;
-        /*internal new*/ public Collider2D collider2d;
-        /*internal new*/ public AudioSource audioSource;
+        public Collider2D collider2d;
+        public AudioSource audioSource;
         public Health health;
         public bool controlEnabled = true;
+
+        [Header("Animator Controllers")]
+        public RuntimeAnimatorController iceController;
+        public RuntimeAnimatorController snowController;
+        public RuntimeAnimatorController snowballController;
+        private RuntimeAnimatorController baseController;
 
         bool jump;
         Vector2 move;
@@ -43,8 +50,17 @@ namespace Platformer.Mechanics
 
         private InputAction m_MoveAction;
         private InputAction m_JumpAction;
-
         public Bounds Bounds => collider2d.bounds;
+
+        float lastTapTime;
+        int lastTapDir;
+        bool isRunning;
+        bool isWalking;
+        bool isSliding;
+        bool isCrouching;
+        bool isWallSticking;
+        int surfaceType;
+        float prevHorizontal;
 
         void Awake()
         {
@@ -54,62 +70,132 @@ namespace Platformer.Mechanics
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
 
+            baseController = animator.runtimeAnimatorController;
+
             m_MoveAction = InputSystem.actions.FindAction("Player/Move");
             m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
-            
             m_MoveAction.Enable();
             m_JumpAction.Enable();
         }
 
+        void ApplyOverrideController()
+        {
+            switch (snowState)
+            {
+                case SnowState.Ice:
+                    animator.runtimeAnimatorController = iceController ?? baseController;
+                    break;
+                case SnowState.Snow:
+                    animator.runtimeAnimatorController = snowController ?? baseController;
+                    break;
+                case SnowState.Snowball:
+                    animator.runtimeAnimatorController = snowballController ?? baseController;
+                    break;
+            }
+        }
+
+        void OnCollisionEnter2D(Collision2D col)
+        {
+            surfaceType = col.collider.CompareTag("Ice") ? 1 : 0;
+
+            if (col.collider.CompareTag("SnowArea"))
+            {
+                if (snowState == SnowState.Ice) snowState = SnowState.Snow;
+                else if (snowState == SnowState.Snow) snowState = SnowState.Snowball;
+                ApplyOverrideController();
+            }
+
+            if (col.collider.CompareTag("Spike") && snowState != SnowState.Snowball)
+            {
+                health.Decrement();
+                animator.SetTrigger("Hurt");
+            }
+        }
+
+        void OnCollisionExit2D(Collision2D col)
+        {
+            surfaceType = 0;
+        }
+
         protected override void Update()
         {
-            if (controlEnabled)
+            if (!controlEnabled)
             {
-                move.x = m_MoveAction.ReadValue<Vector2>().x;
-                if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
-                    jumpState = JumpState.PrepareToJump;
-                else if (m_JumpAction.WasReleasedThisFrame())
+                move.x = 0f;
+                return;
+            }
+
+            float h = m_MoveAction.ReadValue<Vector2>().x;
+
+            if (h != 0f && prevHorizontal == 0f)
+            {
+                int dir = h > 0f ? 1 : -1;
+                if (dir == lastTapDir && Time.time - lastTapTime <= doubleTapMaxDelay)
+                    isRunning = true;
+                else
                 {
-                    stopJump = true;
-                    Schedule<PlayerStopJump>().player = this;
+                    isRunning = false;
+                    lastTapDir = dir;
+                    lastTapTime = Time.time;
+                }
+            }
+            else if (h == 0f)
+            {
+                isRunning = false;
+            }
+
+            isWalking = h != 0f && !isRunning;
+
+            bool onIce = surfaceType == 1;
+            bool downHeld = Keyboard.current.downArrowKey.isPressed;
+            if (downHeld)
+            {
+                if (isRunning && onIce)
+                {
+                    isSliding = true;
+                    isCrouching = false;
+                }
+                else
+                {
+                    isCrouching = true;
+                    isSliding = false;
                 }
             }
             else
             {
-                move.x = 0;
+                isSliding = false;
+                isCrouching = false;
             }
+
+            float speed;
+            if (isCrouching) speed = 0f;
+            else if (isSliding) speed = slideSpeed;
+            else if (isRunning) speed = maxSpeed;
+            else speed = walkSpeed;
+
+            move.x = h * speed;
+
+            if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
+                jumpState = JumpState.PrepareToJump;
+            else if (m_JumpAction.WasReleasedThisFrame())
+            {
+                stopJump = true;
+                Schedule<PlayerStopJump>().player = this;
+            }
+
+            if (snowState == SnowState.Snowball && rollState == RollState.Rolling && Keyboard.current.downArrowKey.wasPressedThisFrame)
+            {
+                snowState = SnowState.Ice;
+                rollState = RollState.None;
+                ApplyOverrideController();
+                jump = true;
+                velocity.y = jumpTakeOffSpeed;
+            }
+
+            prevHorizontal = h;
+
             UpdateJumpState();
             base.Update();
-        }
-
-        void UpdateJumpState()
-        {
-            jump = false;
-            switch (jumpState)
-            {
-                case JumpState.PrepareToJump:
-                    jumpState = JumpState.Jumping;
-                    jump = true;
-                    stopJump = false;
-                    break;
-                case JumpState.Jumping:
-                    if (!IsGrounded)
-                    {
-                        Schedule<PlayerJumped>().player = this;
-                        jumpState = JumpState.InFlight;
-                    }
-                    break;
-                case JumpState.InFlight:
-                    if (IsGrounded)
-                    {
-                        Schedule<PlayerLanded>().player = this;
-                        jumpState = JumpState.Landed;
-                    }
-                    break;
-                case JumpState.Landed:
-                    jumpState = JumpState.Grounded;
-                    break;
-            }
         }
 
         protected override void ComputeVelocity()
@@ -122,30 +208,40 @@ namespace Platformer.Mechanics
             else if (stopJump)
             {
                 stopJump = false;
-                if (velocity.y > 0)
-                {
-                    velocity.y = velocity.y * model.jumpDeceleration;
-                }
+                if (velocity.y > 0f)
+                    velocity.y *= model.jumpDeceleration;
             }
 
-            if (move.x > 0.01f)
-                spriteRenderer.flipX = false;
-            else if (move.x < -0.01f)
-                spriteRenderer.flipX = true;
+            if (move.x > 0.01f) spriteRenderer.flipX = false;
+            else if (move.x < -0.01f) spriteRenderer.flipX = true;
 
             animator.SetBool("grounded", IsGrounded);
-            animator.SetFloat("velocityX", Mathf.Abs(velocity.x) / maxSpeed);
+            animator.SetBool("running", isRunning);
+            animator.SetBool("walking", isWalking);
+            animator.SetBool("sliding", isSliding);
+            animator.SetBool("crouching", isCrouching);
+            float absVel = Mathf.Abs(velocity.x) / maxSpeed;
+            animator.SetFloat("velocityX", absVel);
 
-            targetVelocity = move * maxSpeed;
+            targetVelocity = new Vector2(move.x, velocity.y);
         }
 
-        public enum JumpState
+        void UpdateJumpState()
         {
-            Grounded,
-            PrepareToJump,
-            Jumping,
-            InFlight,
-            Landed
+            jump = false;
+            switch (jumpState)
+            {
+                case JumpState.PrepareToJump:
+                    jumpState = JumpState.Jumping; jump = true; stopJump = false; break;
+                case JumpState.Jumping:
+                    if (!IsGrounded) { Schedule<PlayerJumped>().player = this; jumpState = JumpState.InFlight; } break;
+                case JumpState.InFlight:
+                    if (IsGrounded) { Schedule<PlayerLanded>().player = this; jumpState = JumpState.Landed; } break;
+                case JumpState.Landed:
+                    jumpState = JumpState.Grounded; break;
+            }
         }
+
+        public enum JumpState { Grounded, PrepareToJump, Jumping, InFlight, Landed }
     }
 }
