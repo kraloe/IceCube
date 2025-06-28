@@ -154,113 +154,133 @@ namespace Platformer.Mechanics
         }
 
         protected override void Update()
+{
+    if (!controlEnabled)
+    {
+        move.x = 0f;
+        return;
+    }
+
+    float h = m_MoveAction.ReadValue<Vector2>().x;
+
+    // 1) 입력값 찍기
+    Debug.Log($"[INPUT] h={h}, prevH={prevHorizontal}");
+
+    // —— 기존 더블탭 / isRunning 계산 —— 
+    if (h != 0f && prevHorizontal == 0f)
+    {
+        int dir = h > 0f ? 1 : -1;
+        if (dir == lastTapDir && Time.time - lastTapTime <= doubleTapMaxDelay)
+            isRunning = true;
+        else
         {
-            if (!controlEnabled)
-            {
-                move.x = 0f;
-                return;
-            }
-
-            float h = m_MoveAction.ReadValue<Vector2>().x;
-
-            if (h != 0f && prevHorizontal == 0f)
-            {
-                int dir = h > 0f ? 1 : -1;
-                if (dir == lastTapDir && Time.time - lastTapTime <= doubleTapMaxDelay)
-                    isRunning = true;
-                else
-                {
-                    isRunning = false;
-                    lastTapDir = dir;
-                    lastTapTime = Time.time;
-                }
-            }
-            else if (h == 0f)
-            {
-                isRunning = false;
-            }
-
-            isWalking = h != 0f && !isRunning;
-
-            bool onIce = surfaceType == 1;
-            bool downHeld = Keyboard.current.downArrowKey.isPressed;
-            if (downHeld)
-            {
-                if (onIce && isRunning && snowState == SnowState.Ice)
-                {
-                    isSliding = true;
-                    isCrouching = false;
-                }
-                else
-                {
-                    isCrouching = true;
-                    isSliding = false;
-                }
-            }
-            else
-            {
-                isSliding = false;
-                isCrouching = false;
-            }
-
-            float speed;
-            if (isCrouching) speed = 0f;
-            else if (isSliding) speed = slideSpeed;
-            else if (isRunning) speed = maxSpeed;
-            else speed = walkSpeed;
-
-            move.x = h * speed;
-
-            if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
-                jumpState = JumpState.PrepareToJump;
-            else if (m_JumpAction.WasReleasedThisFrame())
-            {
-                stopJump = true;
-                Schedule<PlayerStopJump>().player = this;
-            }
-
-            if (snowState == SnowState.Snowball && rollState == RollState.Rolling && Keyboard.current.downArrowKey.wasPressedThisFrame)
-            {
-                snowState = SnowState.Ice;
-                rollState = RollState.None;
-                ApplyOverrideController();
-                jump = true;
-                velocity.y = jumpTakeOffSpeed;
-            }
-
-            prevHorizontal = h;
-
-            UpdateJumpState();
-            base.Update();
+            isRunning = false;
+            lastTapDir = dir;
+            lastTapTime = Time.time;
         }
+    }
+    else if (h == 0f)
+    {
+        isRunning = false;
+    }
 
-        protected override void ComputeVelocity()
+    isWalking = h != 0f && !isRunning;
+
+    // 2) 상태 플래그 찍기 (isRunning/isWalking 등)
+    Debug.Log($"[STATE] running={isRunning}, walking={isWalking}, sliding={isSliding}, crouching={isCrouching}");
+
+    // —— crouch/slide 로직 —— 
+    bool onIce = surfaceType == 1;
+    bool downHeld = Keyboard.current.downArrowKey.isPressed;
+    if (downHeld)
+    {
+        if (onIce && isRunning && snowState == SnowState.Ice)
         {
-            if (jump && IsGrounded)
-            {
-                velocity.y = jumpTakeOffSpeed * model.jumpModifier;
-                jump = false;
-            }
-            else if (stopJump)
-            {
-                stopJump = false;
-                if (velocity.y > 0f)
-                    velocity.y *= model.jumpDeceleration;
-            }
-
-            if (move.x > 0.01f) spriteRenderer.flipX = false;
-            else if (move.x < -0.01f) spriteRenderer.flipX = true;
-
-            animator.SetBool("grounded", IsGrounded);
-            animator.SetBool("running", isRunning);
-            animator.SetBool("walking", isWalking);
-            animator.SetBool("sliding", isSliding);
-            animator.SetBool("crouching", isCrouching);
-            float absVel = Mathf.Abs(velocity.x) / maxSpeed;
-            animator.SetFloat("velocityX", absVel);
-
-            targetVelocity = new Vector2(move.x, velocity.y);
+            isSliding = true;
+            isCrouching = false;
         }
+        else
+        {
+            isCrouching = true;
+            isSliding = false;
+        }
+    }
+    else
+    {
+        isSliding = false;
+        isCrouching = false;
+    }
+
+    float speed;
+    if (isCrouching) speed = 0f;
+    else if (isSliding) speed = slideSpeed;
+    else if (isRunning) speed = maxSpeed;
+    else speed = walkSpeed;
+
+    move.x = h * speed;
+
+    // —— 점프 입력 —— 
+    if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
+        jumpState = JumpState.PrepareToJump;
+    else if (m_JumpAction.WasReleasedThisFrame())
+    {
+        stopJump = true;
+        Schedule<PlayerStopJump>().player = this;
+    }
+
+    // snowball 상태에서 ↓누르면 깨고 튕겨 나가기
+    if (snowState == SnowState.Snowball && rollState == RollState.Rolling && Keyboard.current.downArrowKey.wasPressedThisFrame)
+    {
+        snowState = SnowState.Ice;
+        rollState = RollState.None;
+        ApplyOverrideController();
+        jump = true;
+        velocity.y = jumpTakeOffSpeed;
+    }
+
+    prevHorizontal = h;
+
+    UpdateJumpState();
+
+    // 3) 애니메이터 파라미터 직전 찍기
+    Debug.Log($"[ANIM PARAMS BEFORE] velocityX={Mathf.Abs(velocity.x)/maxSpeed}, running={isRunning}, walking={isWalking}");
+
+    base.Update();
+}
+
+ protected override void ComputeVelocity()
+{
+    if (jump && IsGrounded)
+    {
+        velocity.y = jumpTakeOffSpeed * model.jumpModifier;
+        jump = false;
+    }
+    else if (stopJump)
+    {
+        stopJump = false;
+        if (velocity.y > 0f)
+            velocity.y *= model.jumpDeceleration;
+    }
+
+    if (move.x > 0.01f) spriteRenderer.flipX = false;
+    else if (move.x < -0.01f) spriteRenderer.flipX = true;
+    targetVelocity = new Vector2(move.x, velocity.y);
+
+    // 애니메이터 파라미터 계산
+    float animSpeedParam = 0f;
+    if (isWalking) animSpeedParam = 0.5f;
+    else if (isRunning) animSpeedParam = 1f;
+
+    animator.SetBool("grounded", IsGrounded);
+    animator.SetBool("running", isRunning);
+    animator.SetBool("walking", isWalking);
+    animator.SetBool("sliding", isSliding);
+    animator.SetBool("crouching", isCrouching);
+    animator.SetFloat("velocityX", animSpeedParam);
+}
+
+
+
 
         void UpdateJumpState()
         {
