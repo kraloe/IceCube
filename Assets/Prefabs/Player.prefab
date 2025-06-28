@@ -57,14 +57,21 @@ MonoBehaviour:
   respawnAudio: {fileID: 8300000, guid: e18959d46b63f3c4c8cc020a433cf848, type: 3}
   ouchAudio: {fileID: 8300000, guid: 6c05149e5a2fba64ba172e25a61074b7, type: 3}
   maxSpeed: 3
+  walkSpeed: 3
+  slideSpeed: 8
+  rollSpeed: 10
   jumpTakeOffSpeed: 7
+  wallSlideSpeed: -2
+  doubleTapMaxDelay: 0.3
+  snowState: 0
   jumpState: 0
   collider2d: {fileID: 0}
   audioSource: {fileID: 0}
   health: {fileID: 0}
   controlEnabled: 1
-  InputAsset: {fileID: -944628639613478452, guid: e56a71532e878ca498ffce08f1e0f519,
-    type: 3}
+  iceController: {fileID: 22100000, guid: cf63097e06af44d46bbab19c520bcf45, type: 2}
+  snowController: {fileID: 22100000, guid: 16dcad0b82a4a874594e0eaa7cca5a84, type: 2}
+  snowballController: {fileID: 22100000, guid: 8b2999f12f9bd89409b82d692dba37b2, type: 2}
 --- !u!212 &212064061491315838
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -278,7 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffad43bb006db4856a9c527b89b48db9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 1
+  maxHP: 2
 --- !u!61 &1824045667
 BoxCollider2D:
   m_ObjectHideFlags: 0

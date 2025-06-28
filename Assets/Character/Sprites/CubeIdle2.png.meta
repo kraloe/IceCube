@@ -123,9 +123,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 54
-        y: 51
-        width: 122
-        height: 118
+        y: 52
+        width: 121
+        height: 120
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,8 +146,8 @@ TextureImporter:
         serializedVersion: 2
         x: 231
         y: 51
-        width: 124
-        height: 116
+        width: 125
+        height: 119
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,10 +166,10 @@ TextureImporter:
       name: CubeIdle2_2
       rect:
         serializedVersion: 2
-        x: 407
-        y: 51
-        width: 127
-        height: 115
+        x: 409
+        y: 52
+        width: 126
+        height: 122
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
