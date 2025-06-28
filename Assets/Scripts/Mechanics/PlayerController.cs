@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Platformer.Gameplay;
 using static Platformer.Core.Simulation;
@@ -30,7 +31,6 @@ namespace Platformer.Mechanics
 
         public JumpState jumpState = JumpState.Grounded;
         private bool stopJump;
-
         public Collider2D collider2d;
         public AudioSource audioSource;
         public Health health;
@@ -58,15 +58,12 @@ namespace Platformer.Mechanics
         bool isWalking;
         bool isSliding;
         bool isCrouching;
+        bool isWallSticking;
         int surfaceType;
         float prevHorizontal;
 
-        float snowTimer;
-        const float snowDuration = 3f;
-
         void Awake()
         {
-
             health = GetComponent<Health>();
             audioSource = GetComponent<AudioSource>();
             collider2d = GetComponent<Collider2D>();
@@ -79,18 +76,6 @@ namespace Platformer.Mechanics
             m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
             m_MoveAction.Enable();
             m_JumpAction.Enable();
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            move = Vector2.zero;
-            prevHorizontal = 0f;
-            lastTapDir = 0;
-            lastTapTime = 0f;
-            isRunning = isWalking = isSliding = isCrouching = false;
-            snowTimer = 0f;
-		ApplyOverrideController();
         }
 
         void ApplyOverrideController()
@@ -113,6 +98,13 @@ namespace Platformer.Mechanics
         {
             surfaceType = col.collider.CompareTag("Ice") ? 1 : 0;
 
+            if (col.collider.CompareTag("SnowArea"))
+            {
+                if (snowState == SnowState.Ice) snowState = SnowState.Snow;
+                else if (snowState == SnowState.Snow) snowState = SnowState.Snowball;
+                ApplyOverrideController();
+            }
+
             if (col.collider.CompareTag("Spike") && snowState != SnowState.Snowball)
             {
                 health.Decrement();
@@ -123,34 +115,6 @@ namespace Platformer.Mechanics
         void OnCollisionExit2D(Collision2D col)
         {
             surfaceType = 0;
-        }
-
-        void OnTriggerEnter2D(Collider2D col)
-        {
-            if (col.CompareTag("SnowArea"))
-            {
-                snowTimer = 0f;
-            }
-        }
-
-        void OnTriggerStay2D(Collider2D col)
-        {
-            if (col.CompareTag("SnowArea") && snowState != SnowState.Snowball)
-            {
-                snowTimer += Time.deltaTime;
-                if (snowTimer >= snowDuration)
-                {
-                    snowTimer = 0f;
-                    snowState++;
-                    ApplyOverrideController();
-                }
-            }
-        }
-
-        void OnTriggerExit2D(Collider2D col)
-        {
-            if (col.CompareTag("SnowArea"))
-                snowTimer = 0f;
         }
 
         protected override void Update()
@@ -186,7 +150,7 @@ namespace Platformer.Mechanics
             bool downHeld = Keyboard.current.downArrowKey.isPressed;
             if (downHeld)
             {
-                if (onIce && isRunning && snowState == SnowState.Ice)
+                if (isRunning && onIce)
                 {
                     isSliding = true;
                     isCrouching = false;
@@ -268,27 +232,13 @@ namespace Platformer.Mechanics
             switch (jumpState)
             {
                 case JumpState.PrepareToJump:
-                    jumpState = JumpState.Jumping;
-                    jump = true;
-                    stopJump = false;
-                    break;
+                    jumpState = JumpState.Jumping; jump = true; stopJump = false; break;
                 case JumpState.Jumping:
-                    if (!IsGrounded)
-                    {
-                        Schedule<PlayerJumped>().player = this;
-                        jumpState = JumpState.InFlight;
-                    }
-                    break;
+                    if (!IsGrounded) { Schedule<PlayerJumped>().player = this; jumpState = JumpState.InFlight; } break;
                 case JumpState.InFlight:
-                    if (IsGrounded)
-                    {
-                        Schedule<PlayerLanded>().player = this;
-                        jumpState = JumpState.Landed;
-                    }
-                    break;
+                    if (IsGrounded) { Schedule<PlayerLanded>().player = this; jumpState = JumpState.Landed; } break;
                 case JumpState.Landed:
-                    jumpState = JumpState.Grounded;
-                    break;
+                    jumpState = JumpState.Grounded; break;
             }
         }
 
