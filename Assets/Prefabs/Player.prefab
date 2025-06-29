@@ -53,6 +53,7 @@ MonoBehaviour:
   minGroundNormalY: 0.9
   gravityModifier: 1
   velocity: {x: 0, y: 0}
+  spawnPoint: {fileID: 0}
   jumpAudio: {fileID: 8300000, guid: 67975c08d56ceb147bad38572d805aa8, type: 3}
   respawnAudio: {fileID: 8300000, guid: e18959d46b63f3c4c8cc020a433cf848, type: 3}
   ouchAudio: {fileID: 8300000, guid: 6c05149e5a2fba64ba172e25a61074b7, type: 3}
@@ -62,6 +63,7 @@ MonoBehaviour:
   rollSpeed: 10
   jumpTakeOffSpeed: 7
   wallSlideSpeed: -2
+  wallJumpPower: {x: 0.02, y: 0.01}
   doubleTapMaxDelay: 0.3
   snowState: 0
   jumpState: 0
@@ -69,9 +71,9 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   health: {fileID: 0}
   controlEnabled: 1
-  iceController: {fileID: 22100000, guid: cf63097e06af44d46bbab19c520bcf45, type: 2}
-  snowController: {fileID: 22100000, guid: 16dcad0b82a4a874594e0eaa7cca5a84, type: 2}
-  snowballController: {fileID: 22100000, guid: 8b2999f12f9bd89409b82d692dba37b2, type: 2}
+  iceController: {fileID: 22100000, guid: e08d620007b005843a10a96815445172, type: 2}
+  snowController: {fileID: 22100000, guid: 9525f3d2bccdc02488c5bea905f64443, type: 2}
+  snowballController: {fileID: 22100000, guid: 373323002ca3e324eb3f4cdf8f40d61c, type: 2}
 --- !u!212 &212064061491315838
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -118,7 +120,7 @@ SpriteRenderer:
   m_SortingOrder: 5
   m_Sprite: {fileID: -282035329035483056, guid: a09678763e05d77459557bade80d88ad,
     type: 3}
-  m_Color: {r: 0.18039216, g: 0.8901961, b: 0.99215686, a: 1}
+  m_Color: {r: 0.9622642, g: 0.9622642, b: 0.9622642, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
