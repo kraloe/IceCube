@@ -20,9 +20,11 @@ namespace Platformer.Mechanics
         public float slideSpeed = 8f;
         public float rollSpeed = 10f;
         public float jumpTakeOffSpeed = 7f;
-        public float wallSlideSpeed = -2f;
-        public Vector2 wallJumpPower = new Vector2(8f, 12f);
-        public LayerMask wallLayer;
+
+        [Header("Wall Mechanics")]
+        public float wallSlideSpeed = -1f;
+        public Vector2 wallJumpPower = new Vector2(0.02f, 0.01f);
+
         public float doubleTapMaxDelay = 0.3f;
 
         public enum SnowState { Ice = 0, Snow = 1, Snowball = 2 }
@@ -63,24 +65,26 @@ namespace Platformer.Mechanics
         bool isCrouching;
         int surfaceType;
         float prevHorizontal;
-
-        bool isTouchingWall;
-        int wallDir;
+        
         bool isWallSliding;
-void OnCollisionStay2D(Collision2D col)
-{
-    // Spike는 따로 처리하니까 제외했다고 가정
-    foreach (var contact in col.contacts)
-    {
-        // 노말의 x 성분이 충분히 크면 옆면 충돌
-        if (Mathf.Abs(contact.normal.x) > 0.9f && !IsGrounded)
+        int wallDir;
+        bool hasWallJumped;
+
+        void OnCollisionStay2D(Collision2D collision)
         {
-            isWallSliding = true;
-            return;
+            if (IsGrounded) return;
+
+            foreach (var contact in collision.contacts)
+            {
+                if (Mathf.Abs(contact.normal.x) > 0.9f)
+                {
+                    isWallSliding = true;
+                    wallDir = contact.normal.x > 0 ? -1 : 1;
+                    break;
+                }
+            }
         }
-    }
-    isWallSliding = false;
-}
+
         void Awake()
         {
             health = GetComponent<Health>();
@@ -89,8 +93,9 @@ void OnCollisionStay2D(Collision2D col)
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
             baseController = animator.runtimeAnimatorController;
-            m_MoveAction = InputSystem.actions.FindAction("Player/Move");
-            m_JumpAction = InputSystem.actions.FindAction("Player/Jump");
+            var playerActionMap = InputSystem.actions.FindActionMap("Player");
+            m_MoveAction = playerActionMap.FindAction("Move");
+            m_JumpAction = playerActionMap.FindAction("Jump");
             m_MoveAction.Enable();
             m_JumpAction.Enable();
         }
@@ -98,6 +103,8 @@ void OnCollisionStay2D(Collision2D col)
         protected override void OnEnable()
         {
             base.OnEnable();
+            hasWallJumped = false;
+            jumpState = JumpState.Grounded;
             move = Vector2.zero;
             prevHorizontal = 0f;
             lastTapDir = 0;
@@ -110,15 +117,9 @@ void OnCollisionStay2D(Collision2D col)
         {
             switch (snowState)
             {
-                case SnowState.Ice:
-                    animator.runtimeAnimatorController = iceController ?? baseController;
-                    break;
-                case SnowState.Snow:
-                    animator.runtimeAnimatorController = snowController ?? baseController;
-                    break;
-                case SnowState.Snowball:
-                    animator.runtimeAnimatorController = snowballController ?? baseController;
-                    break;
+                case SnowState.Ice: animator.runtimeAnimatorController = iceController ?? baseController; break;
+                case SnowState.Snow: animator.runtimeAnimatorController = snowController ?? baseController; break;
+                case SnowState.Snowball: animator.runtimeAnimatorController = snowballController ?? baseController; break;
             }
         }
 
@@ -145,6 +146,11 @@ void OnCollisionStay2D(Collision2D col)
                 ApplyOverrideController();
                 Destroy(col.gameObject);
             }
+            if (col.CompareTag("Spike"))
+            {
+                ResetToSpawn();
+                return;
+            }
         }
 
         protected override void Update()
@@ -154,9 +160,13 @@ void OnCollisionStay2D(Collision2D col)
                 move.x = 0f;
                 return;
             }
-
+            if (IsGrounded)
+            {
+                hasWallJumped = false;
+                isWallSliding = false;
+            }
+            
             float h = m_MoveAction.ReadValue<Vector2>().x;
-
             if (h != 0f && prevHorizontal == 0f)
             {
                 int dir = h > 0f ? 1 : -1;
@@ -175,12 +185,11 @@ void OnCollisionStay2D(Collision2D col)
             }
 
             isWalking = h != 0f && !isRunning;
-
-            bool onIce = surfaceType == 1;
+            
             bool downHeld = Keyboard.current.downArrowKey.isPressed;
             if (downHeld)
             {
-                if (onIce && isRunning && snowState == SnowState.Ice)
+                if (surfaceType == 1 && isRunning && snowState == SnowState.Ice)
                 {
                     isSliding = true;
                     isCrouching = false;
@@ -196,17 +205,26 @@ void OnCollisionStay2D(Collision2D col)
                 isSliding = false;
                 isCrouching = false;
             }
-
-            float speed;
-            if (isCrouching) speed = 0f;
-            else if (isSliding) speed = slideSpeed;
-            else if (isRunning) speed = maxSpeed;
-            else speed = walkSpeed;
-
+            
+            float speed = isCrouching ? 0f : isSliding ? slideSpeed : isRunning ? maxSpeed : walkSpeed;
             move.x = h * speed;
-
-            if (jumpState == JumpState.Grounded && m_JumpAction.WasPressedThisFrame())
-                jumpState = JumpState.PrepareToJump;
+            
+            bool pressedJump = m_JumpAction.WasPressedThisFrame();
+            if (pressedJump)
+            {
+                if (isWallSliding && !hasWallJumped)
+                {
+                    velocity.x = wallJumpPower.x * -wallDir;
+                    velocity.y = wallJumpPower.y;
+                    hasWallJumped = true;
+                    jumpState = JumpState.InFlight;
+                    spriteRenderer.flipX = wallDir == 1;
+                }
+                else if (IsGrounded)
+                {
+                    jumpState = JumpState.PrepareToJump;
+                }
+            }
             else if (m_JumpAction.WasReleasedThisFrame())
             {
                 stopJump = true;
@@ -214,68 +232,64 @@ void OnCollisionStay2D(Collision2D col)
             }
 
             prevHorizontal = h;
-
             UpdateJumpState();
-            HandleWallSlideAndJump();
             base.Update();
+            
+            // *** 여기가 핵심 변경점입니다 ***
+            // 모든 로직과 물리 업데이트(base.Update)가 끝난 후, 다음 프레임을 위해 상태를 초기화합니다.
+            isWallSliding = false;
         }
 
-        void HandleWallSlideAndJump()
+        void LateUpdate()
         {
-            Vector2 origin = collider2d.bounds.center;
-            float dist = 0.1f;
-            bool hitLeft = Physics2D.Raycast(origin, Vector2.left, dist, wallLayer);
-            bool hitRight = Physics2D.Raycast(origin, Vector2.right, dist, wallLayer);
-            isTouchingWall = (!IsGrounded && (hitLeft || hitRight));
-            wallDir = hitLeft ? -1 : (hitRight ? 1 : 0);
-
-            if (isTouchingWall && velocity.y < 0f)
-            {
-                isWallSliding = true;
-                velocity.y = Mathf.Max(velocity.y, wallSlideSpeed);
-            }
-            else isWallSliding = false;
-
-            if (isWallSliding && m_JumpAction.WasPressedThisFrame())
-            {
-                velocity.x = wallJumpPower.x * -wallDir;
-                velocity.y = wallJumpPower.y;
-                isWallSliding = false;
-                jumpState = JumpState.InFlight;
-            }
+            animator.SetBool("grounded", IsGrounded);
+            animator.SetBool("walking", isWalking);
+            animator.SetBool("running", isRunning);
+            animator.SetBool("sliding", isSliding);
+            animator.SetBool("wallSliding", isWallSliding);
+            float speedParam = isRunning ? 1f : (isWalking ? 0.5f : 0f);
+            animator.SetFloat("velocityX", speedParam);
         }
 
         protected override void ComputeVelocity()
-{
-    if (jump && IsGrounded)
     {
-        velocity.y = jumpTakeOffSpeed * model.jumpModifier;
-        jump = false;
+        if (jump)
+        {
+            velocity.y = jumpTakeOffSpeed * model.jumpModifier;
+            jump = false;
+        }
+        else if (stopJump)
+        {
+            stopJump = false;
+            if (velocity.y > 0f)
+                velocity.y *= model.jumpDeceleration;
+        }
+
+        // =========================================================================
+        // <<< 여기에 새로운 코드가 추가되었습니다 >>>
+        // 공중에 있을 때, 수평 속도를 서서히 0으로 줄여주는 공기 저항/감속 효과입니다.
+        if (!IsGrounded)
+        {
+            // Lerp를 사용해 부드러운 감속을 구현합니다. 마지막 값(0.05f)을 조절해 감속되는 빠르기를 바꿀 수 있습니다.
+            velocity.x = Mathf.Lerp(velocity.x, 0, 0.05f);
+        }
+        // =========================================================================
+
+        if (isWallSliding)
+        {
+            velocity.y = Mathf.Max(velocity.y, wallSlideSpeed);
+        }
+
+        if (!hasWallJumped)
+        {
+            targetVelocity.x = move.x;
+        }
+        
+        if (move.x > 0.01f && !hasWallJumped) spriteRenderer.flipX = false;
+        else if (move.x < -0.01f && !hasWallJumped) spriteRenderer.flipX = true;
+        
+        targetVelocity = new Vector2(hasWallJumped ? velocity.x : move.x, velocity.y);
     }
-    else if (stopJump)
-    {
-        stopJump = false;
-        if (velocity.y > 0f)
-            velocity.y *= model.jumpDeceleration;
-    }
-
-    if (isWallSliding)
-        velocity.y = Mathf.Max(velocity.y, wallSlideSpeed);
-
-    if (move.x > 0.01f) spriteRenderer.flipX = false;
-    else if (move.x < -0.01f) spriteRenderer.flipX = true;
-
-    animator.SetBool("grounded", IsGrounded);
-    animator.SetBool("walking", isWalking);
-    animator.SetBool("running", isRunning);
-    animator.SetBool("sliding", isSliding);
-    animator.SetBool("wallSliding", isWallSliding);
-
-    float speedParam = isRunning ? 1f : (isWalking ? 0.5f : 0f);
-    animator.SetFloat("velocityX", speedParam);
-
-    targetVelocity = new Vector2(move.x, velocity.y);
-}
 
         void ResetToSpawn()
         {
@@ -289,8 +303,8 @@ void OnCollisionStay2D(Collision2D col)
             switch (jumpState)
             {
                 case JumpState.PrepareToJump:
-                    jumpState = JumpState.Jumping;
                     jump = true;
+                    jumpState = JumpState.Jumping;
                     stopJump = false;
                     break;
                 case JumpState.Jumping:
