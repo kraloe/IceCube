@@ -21,6 +21,8 @@ namespace Platformer.Mechanics
         public float rollSpeed = 10f;
         public float jumpTakeOffSpeed = 7f;
         public float wallSlideSpeed = -2f;
+        public Vector2 wallJumpPower = new Vector2(8f, 12f);
+        public LayerMask wallLayer;
         public float doubleTapMaxDelay = 0.3f;
 
         public enum SnowState { Ice = 0, Snow = 1, Snowball = 2 }
@@ -62,9 +64,23 @@ namespace Platformer.Mechanics
         int surfaceType;
         float prevHorizontal;
 
-        float snowTimer;
-        const float snowDuration = 3f;
-
+        bool isTouchingWall;
+        int wallDir;
+        bool isWallSliding;
+void OnCollisionStay2D(Collision2D col)
+{
+    // Spike는 따로 처리하니까 제외했다고 가정
+    foreach (var contact in col.contacts)
+    {
+        // 노말의 x 성분이 충분히 크면 옆면 충돌
+        if (Mathf.Abs(contact.normal.x) > 0.9f && !IsGrounded)
+        {
+            isWallSliding = true;
+            return;
+        }
+    }
+    isWallSliding = false;
+}
         void Awake()
         {
             health = GetComponent<Health>();
@@ -87,7 +103,6 @@ namespace Platformer.Mechanics
             lastTapDir = 0;
             lastTapTime = 0f;
             isRunning = isWalking = isSliding = isCrouching = false;
-            snowTimer = 0f;
             ApplyOverrideController();
         }
 
@@ -124,28 +139,12 @@ namespace Platformer.Mechanics
 
         void OnTriggerEnter2D(Collider2D col)
         {
-            if (col.CompareTag("SnowArea"))
-                snowTimer = 0f;
-        }
-
-        void OnTriggerStay2D(Collider2D col)
-        {
-            if (col.CompareTag("SnowArea") && snowState != SnowState.Snowball)
+            if (col.CompareTag("SnowItem") && snowState != SnowState.Snowball)
             {
-                snowTimer += Time.deltaTime;
-                if (snowTimer >= snowDuration)
-                {
-                    snowTimer = 0f;
-                    snowState++;
-                    ApplyOverrideController();
-                }
+                snowState++;
+                ApplyOverrideController();
+                Destroy(col.gameObject);
             }
-        }
-
-        void OnTriggerExit2D(Collider2D col)
-        {
-            if (col.CompareTag("SnowArea"))
-                snowTimer = 0f;
         }
 
         protected override void Update()
@@ -214,51 +213,69 @@ namespace Platformer.Mechanics
                 Schedule<PlayerStopJump>().player = this;
             }
 
-            if (snowState == SnowState.Snowball && rollState == RollState.Rolling && Keyboard.current.downArrowKey.wasPressedThisFrame)
-            {
-                snowState = SnowState.Ice;
-                rollState = RollState.None;
-                ApplyOverrideController();
-                jump = true;
-                velocity.y = jumpTakeOffSpeed;
-            }
-
             prevHorizontal = h;
 
             UpdateJumpState();
+            HandleWallSlideAndJump();
             base.Update();
         }
 
-        protected override void ComputeVelocity()
+        void HandleWallSlideAndJump()
         {
-            if (jump && IsGrounded)
+            Vector2 origin = collider2d.bounds.center;
+            float dist = 0.1f;
+            bool hitLeft = Physics2D.Raycast(origin, Vector2.left, dist, wallLayer);
+            bool hitRight = Physics2D.Raycast(origin, Vector2.right, dist, wallLayer);
+            isTouchingWall = (!IsGrounded && (hitLeft || hitRight));
+            wallDir = hitLeft ? -1 : (hitRight ? 1 : 0);
+
+            if (isTouchingWall && velocity.y < 0f)
             {
-                velocity.y = jumpTakeOffSpeed * model.jumpModifier;
-                jump = false;
+                isWallSliding = true;
+                velocity.y = Mathf.Max(velocity.y, wallSlideSpeed);
             }
-            else if (stopJump)
+            else isWallSliding = false;
+
+            if (isWallSliding && m_JumpAction.WasPressedThisFrame())
             {
-                stopJump = false;
-                if (velocity.y > 0f)
-                    velocity.y *= model.jumpDeceleration;
+                velocity.x = wallJumpPower.x * -wallDir;
+                velocity.y = wallJumpPower.y;
+                isWallSliding = false;
+                jumpState = JumpState.InFlight;
             }
-
-            if (move.x > 0.01f) spriteRenderer.flipX = false;
-            else if (move.x < -0.01f) spriteRenderer.flipX = true;
-
-            float animSpeedParam = 0f;
-            if (isWalking) animSpeedParam = 0.5f;
-            else if (isRunning) animSpeedParam = 1f;
-
-            animator.SetBool("grounded", IsGrounded);
-            animator.SetBool("running", isRunning);
-            animator.SetBool("walking", isWalking);
-            animator.SetBool("sliding", isSliding);
-            animator.SetBool("crouching", isCrouching);
-            animator.SetFloat("velocityX", animSpeedParam);
-
-            targetVelocity = new Vector2(move.x, velocity.y);
         }
+
+        protected override void ComputeVelocity()
+{
+    if (jump && IsGrounded)
+    {
+        velocity.y = jumpTakeOffSpeed * model.jumpModifier;
+        jump = false;
+    }
+    else if (stopJump)
+    {
+        stopJump = false;
+        if (velocity.y > 0f)
+            velocity.y *= model.jumpDeceleration;
+    }
+
+    if (isWallSliding)
+        velocity.y = Mathf.Max(velocity.y, wallSlideSpeed);
+
+    if (move.x > 0.01f) spriteRenderer.flipX = false;
+    else if (move.x < -0.01f) spriteRenderer.flipX = true;
+
+    animator.SetBool("grounded", IsGrounded);
+    animator.SetBool("walking", isWalking);
+    animator.SetBool("running", isRunning);
+    animator.SetBool("sliding", isSliding);
+    animator.SetBool("wallSliding", isWallSliding);
+
+    float speedParam = isRunning ? 1f : (isWalking ? 0.5f : 0f);
+    animator.SetFloat("velocityX", speedParam);
+
+    targetVelocity = new Vector2(move.x, velocity.y);
+}
 
         void ResetToSpawn()
         {
